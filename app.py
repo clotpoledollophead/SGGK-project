@@ -39,7 +39,7 @@ def load_data():
 
 # Cache the text loading function
 @st.cache_data
-def load_text_file(filepath='./corpus/full-sggk.txt'):
+def load_text_file(filepath='full-sggk.txt'):
     """Load the full text file"""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
