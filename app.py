@@ -420,12 +420,7 @@ st.markdown(
     <div style="text-align: center; font-size: 12px; color: grey;">
       &copy; Hsin-Ying Lee, 2025. Licensed under the Apache License 2.0.
       <a href="LICENSE" style="color: grey;">View license</a>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-st.markdown(
-    """
+    </div><br>
     <div style='text-align: center; color: #666; font-size: 0.875rem;'>
     Middle English Text Word Frequency Analysis | Created with Streamlit and Plotly
     </div>
