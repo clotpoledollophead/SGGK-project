@@ -1,7 +1,22 @@
 /* style.css - Custom styles for the Sir Gawain and the Green Knight app */
 
-/* Custom green cursor */
+/* Updated Green Theme */
+
+:root {
+    --primary-color: #00a86b; /* Main green color */
+    --text-color: #333333;   /* Darker text for readability */
+    --background-color: #f5f5f5; /* Light background */
+    --accent-color: #a80053;   /* A complementary accent, if needed */
+    --light-green: rgba(0, 168, 107, 0.1); /* Light green */
+    --lighter-green: rgba(0, 168, 107, 0.05); /* Lighter green for subtle highlights */
+}
+
 body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300a86b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z'%3E%3C/path%3E%3Cpath d='M13 13l6 6'%3E%3C/path%3E%3C/svg%3E"), auto;
 }
 
@@ -15,17 +30,17 @@ input[type="text"], textarea, [contenteditable="true"] {
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300a86b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1'%3E%3C/path%3E%3Cpath d='M7 22h1a4 4 0 0 0 4-4V6a4 4 0 0 0-4-4H7'%3E%3C/path%3E%3C/svg%3E"), text;
 }
 
-/* Green text selection color */
+/* Updated green text selection color */
 ::selection {
-    background-color: rgba(0, 168, 107, 0.3);
-    color: #000;
+    background-color: var(--light-green);
+    color: var(--text-color);
 }
 
 /* Navigation button styling */
 div.stButton > button {
-    background-color: rgba(240, 242, 246, 0.5) !important;
-    color: #262730 !important;
-    border: none !important;
+    background-color: var(--lighter-green) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--primary-color) !important;
     border-radius: 8px !important;
     padding: 12px 15px !important;
     margin-bottom: 10px !important;
@@ -38,7 +53,7 @@ div.stButton > button {
 
 /* Active navigation button */
 div.stButton > button.st-emotion-cache-19rxjzo {
-    background-color: rgba(75, 94, 255, 0.75) !important;
+    background-color: var(--primary-color) !important;
     color: white !important;
 }
 
@@ -68,4 +83,63 @@ div.stButton > button:hover::before {
 div.stButton > button:hover {
     box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
     transform: translateY(-2px) !important;
+    background-color: var(--light-green) !important;
+}
+
+/* Header (title) styling */
+h1, h2, h3 {
+    color: var(--primary-color);
+}
+
+/* Horizontal lines */
+hr {
+    border-color: var(--light-green);
+}
+
+/* Info boxes */
+div.stInfo {
+    background-color: var(--lighter-green);
+    border-left: 5px solid var(--primary-color);
+    color: var(--text-color);
+}
+
+/* Metric boxes */
+div.stMetricValue {
+    color: var(--primary-color);
+}
+
+/* Example: Styling Streamlit DataFrames (may need adjustment) */
+.streamlit-dataframe {
+    background-color: var(--lighter-green); /* Light green background */
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+}
+
+.streamlit-dataframe th {
+    background-color: var(--light-green);
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.streamlit-dataframe td {
+    padding: 8px;
+}
+
+/* Example: Styling Streamlit Tables (may need adjustment) */
+.streamlit-table {
+    background-color: var(--lighter-green); /* Light green background */
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+}
+
+.streamlit-table th {
+    background-color: var(--light-green);
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.streamlit-table td {
+    padding: 8px;
 }

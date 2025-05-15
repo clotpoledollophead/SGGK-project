@@ -46,7 +46,7 @@ def display_top_words(word_freq):
         y='Word', 
         orientation='h',
         color='Frequency',
-        color_continuous_scale='Blues',
+        color_continuous_scale='Greens',
         text='Frequency'
     )
     
@@ -93,13 +93,17 @@ def display_frequency_distribution(word_freq):
         values=range_counts.values,
         names=range_counts.index,
         title="Distribution of Word Frequencies",
-        color_discrete_sequence=px.colors.qualitative.Set3
+        color_discrete_sequence=[
+            '#f0f9e8', '#bae4bc', '#7bccc4', '#43a2ca', '#0868ac'  # Light to dark greens/blues
+        ],
+        height=600, # Adjust height to make it bigger,
     )
     
     fig.update_traces(
         textposition='inside',
         textinfo='percent+label+value',
-        hovertemplate='<b>%{label}</b><br>Words: %{value}<br>Percentage: %{percent}<extra></extra>'
+        hovertemplate='<b>%{label}</b><br>Words: %{value}<br>Percentage: %{percent}<extra></extra>',
+        textfont_size=20
     )
     
     st.plotly_chart(fig, use_container_width=True)
@@ -136,5 +140,6 @@ def display_frequency_by_position(df):
     fig.update_traces(
         hovertemplate='<b>Lines %{x}-%{x}99</b><br>Avg Frequency: %{y:.1f}<extra></extra>'
     )
-    
+    fig.update_traces(marker=dict(color='#00a86b'),
+    line=dict(color='#00a86b'))
     st.plotly_chart(fig, use_container_width=True)

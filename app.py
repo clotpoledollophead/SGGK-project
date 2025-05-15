@@ -38,6 +38,18 @@ with st.sidebar:
     # Add some spacing and styling
     st.markdown('<div style="margin-bottom: 15px;"></div>', unsafe_allow_html=True)
     
+    # Make the sidebar background transparent green
+    st.markdown(
+        """
+        <style>
+                [data-testid="stSidebar"] {
+                background-color: rgba(144, 238, 144, 0.2); /* LightGreen with transparency */
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    
     # Create custom buttons with conditional styling
     if st.button('Home', key='home_btn', 
                 use_container_width=True, 
