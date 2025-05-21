@@ -4,7 +4,7 @@ import pandas as pd
 
 # Import all modules
 from config import set_page_config
-from data_loader import load_data
+from data_loader import load_data, load_target_word_data
 from stats_section import display_stats_section
 from visualizations import display_visualizations
 from word_search import display_word_search
@@ -84,6 +84,7 @@ st.title("Sir Gawain and the Green Knight: A Textual Analysis")
 
 # Load the data (needed for most pages)
 df = load_data()
+df_target = load_target_word_data() # NEW: Loads target_word_data.csv
 
 # Display selected page
 if page == "Home":
@@ -131,7 +132,8 @@ elif page == "Word Search":
     st.markdown("### Word Search and Analysis")
     
     if df is not None:
-        display_word_search(df)
+        # Pass both dataframes to display_word_search
+        display_word_search(df, df_target) # MODIFIED CALL
     else:
         st.error("Could not load the data. Please ensure 'word_occurrences.csv' is in the same directory as this script.")
 

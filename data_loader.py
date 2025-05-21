@@ -32,3 +32,16 @@ def load_text_file(filepath='full-sggk.txt'):
     except Exception as e:
         st.error(f"Error loading text file: {str(e)}")
         return None
+    
+@st.cache_data
+def load_target_word_data():
+    """Load target word data from CSV."""
+    try:
+        df = pd.read_csv('target_word_data.csv')
+        # Strip whitespace from column names
+        df.columns = df.columns.str.strip() # <--- ADD THIS LINE
+        df['Word'] = df['Word'].str.lower() # Ensure words are lowercase for consistency
+        return df
+    except Exception as e:
+        st.error(f"Error loading target_word_data.csv: {str(e)}")
+        return pd.DataFrame() # Return empty DataFrame on error
