@@ -5,6 +5,93 @@ import pandas as pd
 import re
 from data_loader import load_text_file
 
+
+def load_target_word_data():
+    """Load target word data from CSV."""
+    try:
+        df = pd.read_csv('target_word_data.csv')
+        df['Word'] = df['Word'].str.lower() # Ensure words are lowercase for consistency
+        return df
+    except Exception as e:
+        st.error(f"Error loading target_word_data.csv: {str(e)}")
+        return pd.DataFrame() # Return empty DataFrame on error
+
+def create_target_word_distribution_plot(df_target_words, tokens, total_tokens, fitt_positions):
+    """Create and display the distribution plot for words from target_word_data.csv"""
+    fig = go.Figure()
+
+    # Get unique target words
+    target_words_set = set(df_target_words['Word'].unique())
+    positions = []
+
+    for index, token in enumerate(tokens):
+        relative_position = index / total_tokens
+        if token in target_words_set:
+            positions.append(relative_position)
+
+    if positions:
+        # Add vertical lines for each word occurrence
+        for pos in positions:
+            fig.add_trace(go.Scatter(
+                x=[pos, pos],
+                y=[0.7, 1.3], # Adjust y-position as needed for a single line
+                mode='lines',
+                line=dict(color="#FF4B4B", width=0.7), # A distinct color for target words
+                showlegend=False,
+                hoverinfo='skip'
+            ))
+
+        # Add legend entry for target words
+        fig.add_trace(go.Scatter(
+            x=[None],
+            y=[None],
+            mode='markers',
+            marker=dict(size=8, color="#FF4B4B"),
+            name="Target Words"
+        ))
+
+    # Add fitt boundaries (re-use the existing logic)
+    if fitt_positions:
+        for i, pos in enumerate(fitt_positions):
+            fig.add_vline(
+                x=pos,
+                line_dash="dash",
+                line_color="gray",
+                opacity=0.7,
+                annotation_text=f"Fitt {i+1} end" if i < len(fitt_positions) else None,
+                annotation_position="top"
+            )
+
+    # Update layout
+    fig.update_layout(
+        title="Distribution of Specific Target Words",
+        xaxis_title="Position in text (0 = start, 1 = end)",
+        yaxis_title="",
+        yaxis=dict(
+            tickmode='array',
+            tickvals=[1], # Only one category for now
+            ticktext=['Target Words'],
+            range=[0.5, 1.5] # Adjust range for a single line
+        ),
+        xaxis=dict(range=[0, 1]),
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.3,
+            xanchor="center",
+            x=0.5
+        ),
+        height=300 # Slightly smaller plot as it's a single line
+    )
+
+    st.markdown("---")
+    st.subheader("🎯 Specific Target Word Distribution")
+    st.markdown("""
+    This visualization shows the distribution of a predefined list of specific words from `target_word_data.csv` throughout the text.
+    """)
+    st.plotly_chart(fig, use_container_width=True)
+
 def display_distribution_analysis():
     """Display the word distribution analysis section"""
     st.markdown("---")
@@ -73,6 +160,14 @@ def display_distribution_analysis():
             display_overlap_analysis(words_chatgpt, words_claude, words_grok)
         else:
             st.warning(f"No word data available for {theme} theme. Please check that the required CSV files exist.")
+
+            # --- Add new visualization for target_word_data.csv ---
+        df_target_words = load_target_word_data()
+        if not df_target_words.empty:
+            create_target_word_distribution_plot(df_target_words, tokens, total_tokens, fitt_positions)
+        else:
+            st.warning("Could not load target word data. Specific target word distribution is unavailable.")
+            
     else:
         st.warning("Could not load the text file. Distribution analysis is unavailable.")
 
