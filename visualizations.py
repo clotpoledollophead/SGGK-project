@@ -18,7 +18,7 @@ def display_visualizations(df):
     
     chart_type = st.selectbox(
         "Select Visualization Type",
-        ["Top Words", "Frequency Distribution", "Word Frequency by Line Position"]
+        ["Top Words", "Frequency Distribution", "Word Frequency by Line Position", "Frequency Dot Plot"]
     )
     
     # Display selected chart
@@ -26,8 +26,10 @@ def display_visualizations(df):
         display_top_words(word_freq)
     elif chart_type == "Frequency Distribution":
         display_frequency_distribution(word_freq)
-    else:  # Word Frequency by Line Position
+    elif chart_type == "Word Frequency by Line Position":
         display_frequency_by_position(df)
+    else:  # Frequency Dot Plot
+        display_frequency_dot_plot(word_freq)
 
 def display_top_words(word_freq):
     """Display the top words chart"""
@@ -143,4 +145,31 @@ def display_frequency_by_position(df):
         marker=dict(color='#00a86b'),
         line=dict(color='#00a86b')
     )
+    st.plotly_chart(fig, use_container_width=True)
+    
+def display_frequency_dot_plot(word_freq):
+    """Display a dot plot of word frequencies"""
+    st.subheader("Distribution of Word Frequencies (Dot Plot)")
+    st.markdown("""
+    This dot plot visualizes the individual frequency of each word. 
+    It helps identify clusters of words with similar frequencies and 
+    highlights the distribution of word occurrences more clearly, 
+    especially for lower frequencies.
+    """)
+
+    fig = px.strip(
+        word_freq, 
+        y="Frequency", 
+        orientation="v", # Vertical orientation
+        title="Dot Plot of Word Frequencies",
+        stripmode="overlay", # Overlay dots for better visibility of density
+        color_discrete_sequence=['#00a86b'] # A nice green color
+    )
+    
+    fig.update_layout(
+        height=600,
+        yaxis_title="Word Frequency",
+        xaxis_title="" # No x-axis label needed for a single strip
+    )
+
     st.plotly_chart(fig, use_container_width=True)
