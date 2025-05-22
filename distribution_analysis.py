@@ -36,7 +36,7 @@ def create_target_word_distribution_plot(df_target_words, tokens, total_tokens, 
                 x=[pos, pos],
                 y=[0.7, 1.3], # Adjust y-position as needed for a single line
                 mode='lines',
-                line=dict(color="#FF4B4B", width=0.7), # A distinct color for target words
+                line=dict(color="green", width=0.7), # A distinct color for target words
                 showlegend=False,
                 hoverinfo='skip'
             ))
