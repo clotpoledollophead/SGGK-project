@@ -138,8 +138,9 @@ def display_frequency_by_position(df):
     )
     
     fig.update_traces(
-        hovertemplate='<b>Lines %{x}-%{x}99</b><br>Avg Frequency: %{y:.1f}<extra></extra>'
+        hovertemplate='<b>Lines %{customdata}</b><br>Avg Frequency: %{y:.1f}<extra></extra>',
+        customdata=line_groups['Line Range'],
+        marker=dict(color='#00a86b'),
+        line=dict(color='#00a86b')
     )
-    fig.update_traces(marker=dict(color='#00a86b'),
-    line=dict(color='#00a86b'))
     st.plotly_chart(fig, use_container_width=True)
