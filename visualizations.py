@@ -182,7 +182,7 @@ def display_frequency_dot_plot(word_freq): # Function name changed back
     )
 
     st.plotly_chart(fig, use_container_width=True)
-    
+
 def display_frequency_of_frequencies_plot(word_freq):
     """Display a plot showing the frequency of frequencies."""
     st.subheader("Frequency of Frequencies Plot")
@@ -192,7 +192,7 @@ def display_frequency_of_frequencies_plot(word_freq):
     while the X-axis shows how many *different words* have that specific frequency.
     This plot helps understand the distribution of word occurrences, often revealing
     that many words appear rarely, and only a few words appear very frequently.
-    The X-axis is on a logarithmic scale to better show the wide range of counts.
+    The X-axis is on a logarithmic base 2 scale to better show the wide range of counts.
     """)
 
     # Calculate the frequency of each frequency
@@ -207,17 +207,37 @@ def display_frequency_of_frequencies_plot(word_freq):
         x='Count of Words with this Frequency',
         y='Word Frequency',
         orientation='h',
-        log_x=True,  # Set X-axis to logarithmic scale
+        log_x=True,  # Set X-axis to logarithmic scale (base 10 by default)
         color='Word Frequency',
         color_continuous_scale='Viridis',
         title='Frequency of Frequencies'
     )
 
+    # Manually adjust x-axis ticks to appear as powers of 2 for a log2-like visual
+    min_count = freq_of_freq['Count of Words with this Frequency'].min()
+    max_count = freq_of_freq['Count of Words with this Frequency'].max()
+
+    # Generate tick values as powers of 2
+    # Ensure min_count is at least 1 for log2
+    start_power = int(np.floor(np.log2(max(1, min_count))))
+    end_power = int(np.ceil(np.log2(max_count))) + 1
+
+    tick_vals_pow2 = [2**i for i in range(start_power, end_power)]
+    tick_text_pow2 = [str(val) for val in tick_vals_pow2]
+
     fig.update_layout(
         height=600,
-        xaxis_title="Count of Words with this Frequency (Frequency of Frequencies - Log Scale)", # Updated title
+        xaxis_title="Count of Words with this Frequency (Frequency of Frequencies - Log2 Scale)", # Updated title
         yaxis_title="Word Frequency (How many times a word appears)",
         yaxis={'type': 'category'}
+    )
+
+    # Update x-axis with custom ticks for a log2 base visual
+    fig.update_xaxes(
+        type='log', # Ensure it's treated as a logarithmic axis
+        tickmode='array',
+        tickvals=tick_vals_pow2,
+        ticktext=tick_text_pow2
     )
 
     fig.update_traces(texttemplate='%{x}', textposition='outside')
