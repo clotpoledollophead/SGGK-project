@@ -4,6 +4,50 @@ import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
 
+def get_frequency_by_position_figure(df):
+    """
+    Generates the Plotly figure for Average Word Frequency by Line Position.
+    This function is designed to return the figure object for reusability.
+    """
+    # Group by line ranges (every 100 lines)
+    df['Line Group'] = (df['Line Number'] // 100) * 100
+    line_groups = df.groupby('Line Group')['Frequency'].mean().reset_index()
+    line_groups['Line Range'] = line_groups['Line Group'].apply(lambda x: f"{x}-{x+99}")
+
+    fig = px.line(
+        line_groups,
+        x='Line Group',
+        y='Frequency',
+        markers=True,
+        title="Average Word Frequency Throughout the Text"
+    )
+
+    fig.update_layout(
+        xaxis_title="Line Position",
+        yaxis_title="Average Frequency",
+        hovermode='x unified'
+    )
+
+    fig.update_traces(
+        hovertemplate='<b>Lines %{customdata}</b><br>Avg Frequency: %{y:.1f}<extra></extra>',
+        customdata=line_groups['Line Range'],
+        marker=dict(color='#00a86b'),
+        line=dict(color='#00a86b')
+    )
+    return fig
+
+def display_frequency_by_position(df):
+    """Display the frequency by line position chart"""
+    st.subheader("Average Word Frequency by Line Position")
+    st.markdown("""
+    This line chart shows how average word frequency changes throughout the text. Variations
+    might indicate shifts in narrative style, dialogue versus description, or different
+    thematic sections. Peaks could represent formulaic passages or repetitive elements
+    common in medieval poetry.
+    """)
+    fig = get_frequency_by_position_figure(df)
+    st.plotly_chart(fig, use_container_width=True)
+
 def display_visualizations(df):
     """Display the visualization section of the app"""
     # Get word frequencies
@@ -117,43 +161,6 @@ def display_frequency_distribution(word_freq):
         textfont_size=20
     )
 
-    st.plotly_chart(fig, use_container_width=True)
-
-def display_frequency_by_position(df):
-    """Display the frequency by line position chart"""
-    st.subheader("Average Word Frequency by Line Position")
-    st.markdown("""
-    This line chart shows how average word frequency changes throughout the text. Variations
-    might indicate shifts in narrative style, dialogue versus description, or different
-    thematic sections. Peaks could represent formulaic passages or repetitive elements
-    common in medieval poetry.
-    """)
-
-    # Group by line ranges (every 100 lines)
-    df['Line Group'] = (df['Line Number'] // 100) * 100
-    line_groups = df.groupby('Line Group')['Frequency'].mean().reset_index()
-    line_groups['Line Range'] = line_groups['Line Group'].apply(lambda x: f"{x}-{x+99}")
-
-    fig = px.line(
-        line_groups,
-        x='Line Group',
-        y='Frequency',
-        markers=True,
-        title="Average Word Frequency Throughout the Text"
-    )
-
-    fig.update_layout(
-        xaxis_title="Line Position",
-        yaxis_title="Average Frequency",
-        hovermode='x unified'
-    )
-
-    fig.update_traces(
-        hovertemplate='<b>Lines %{customdata}</b><br>Avg Frequency: %{y:.1f}<extra></extra>',
-        customdata=line_groups['Line Range'],
-        marker=dict(color='#00a86b'),
-        line=dict(color='#00a86b')
-    )
     st.plotly_chart(fig, use_container_width=True)
 
 def display_frequency_dot_plot(word_freq): # Function name changed back

@@ -10,6 +10,7 @@ from visualizations import display_visualizations
 from word_search import display_word_search
 from distribution_analysis import display_distribution_analysis
 from about_section import display_about_section
+from combined_analysis import display_combined_analysis_page
 
 # Set page configuration
 set_page_config()
@@ -70,6 +71,11 @@ with st.sidebar:
                 use_container_width=True,
                 type="primary" if st.session_state['page'] == 'Distribution Analysis' else "secondary"):
         nav_to('Distribution Analysis')
+
+    if st.button('Combined Analysis', key='combined_btn',
+                use_container_width=True,
+                type="primary" if st.session_state['page'] == 'Combined Analysis' else "secondary"):
+        nav_to('Combined Analysis')    
         
     if st.button('About', key='about_btn', 
                 use_container_width=True,
@@ -144,6 +150,9 @@ elif page == "Distribution Analysis":
         display_distribution_analysis()
     else:
         st.error("Could not load the data. Please ensure 'word_occurrences.csv' is in the same directory as this script.")
+
+elif page == "Combined Analysis":
+    display_combined_analysis_page()
 
 elif page == "About":
     st.markdown("### About This Project")

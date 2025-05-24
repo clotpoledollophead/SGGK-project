@@ -16,11 +16,12 @@ def load_target_word_data():
         st.error(f"Error loading target_word_data.csv: {str(e)}")
         return pd.DataFrame() # Return empty DataFrame on error
 
-def create_target_word_distribution_plot(df_target_words, tokens, total_tokens, fitt_positions):
-    """Create and display the distribution plot for words from target_word_data.csv"""
-    fig = go.Figure()
-
-    # Get unique target words
+def get_target_word_distribution_traces(df_target_words, tokens, total_tokens, fitt_positions):
+    """
+    Generates Plotly traces for the distribution of words from target_word_data.csv.
+    Returns a list of traces, not a full figure.
+    """
+    traces = []
     target_words_set = set(df_target_words['Word'].unique())
     positions = []
 
@@ -32,7 +33,7 @@ def create_target_word_distribution_plot(df_target_words, tokens, total_tokens, 
     if positions:
         # Add vertical lines for each word occurrence
         for pos in positions:
-            fig.add_trace(go.Scatter(
+            traces.append(go.Scatter(
                 x=[pos, pos],
                 y=[0.7, 1.3], # Adjust y-position as needed for a single line
                 mode='lines',
@@ -42,13 +43,22 @@ def create_target_word_distribution_plot(df_target_words, tokens, total_tokens, 
             ))
 
         # Add legend entry for target words
-        fig.add_trace(go.Scatter(
+        traces.append(go.Scatter(
             x=[None],
             y=[None],
             mode='markers',
-            marker=dict(size=8, color="#FF4B4B"),
+            marker=dict(size=8, color="green"), # Use green for consistency
             name="Target Words"
         ))
+    return traces
+
+def create_target_word_distribution_plot(df_target_words, tokens, total_tokens, fitt_positions):
+    """Create and display the distribution plot for words from target_word_data.csv"""
+    fig = go.Figure()
+    
+    traces = get_target_word_distribution_traces(df_target_words, tokens, total_tokens, fitt_positions)
+    for trace in traces:
+        fig.add_trace(trace)
 
     # Add fitt boundaries (re-use the existing logic)
     if fitt_positions:
@@ -90,6 +100,90 @@ def create_target_word_distribution_plot(df_target_words, tokens, total_tokens, 
     st.markdown("""
     This visualization shows the distribution of a predefined list of specific words from `target_word_data.csv` throughout the text.
     """)
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def get_ai_model_distribution_traces(positions_chatgpt, positions_claude, positions_grok, y_offset=0):
+    """
+    Generates Plotly traces for AI model word distributions.
+    Returns a list of traces, not a full figure.
+    The y_offset allows shifting the traces vertically if combined with other plots.
+    """
+    traces = []
+    ai_models = [
+        ("ChatGPT", positions_chatgpt, "#1EE196", 3),
+        ("Claude", positions_claude, "#1ECBE1", 2),
+        ("Grok", positions_grok, "#1E6AE1", 1)
+    ]
+    
+    for model_name, positions, color, y_pos_base in ai_models:
+        y_pos = y_pos_base + y_offset # Apply offset
+        if positions:
+            # Add vertical lines for each word occurrence
+            for pos in positions:
+                traces.append(go.Scatter(
+                    x=[pos, pos],
+                    y=[y_pos - 0.3, y_pos + 0.3],
+                    mode='lines',
+                    line=dict(color=color, width=0.7),
+                    showlegend=False,
+                    hoverinfo='skip'
+                ))
+            
+            # Add legend entry
+            traces.append(go.Scatter(
+                x=[None],
+                y=[None],
+                mode='markers',
+                marker=dict(size=8, color=color),
+                name=model_name
+            ))
+    return traces
+
+def create_distribution_plot(positions_chatgpt, positions_claude, positions_grok, 
+                           fitt_positions, theme):
+    """Create and display the distribution plot"""
+    fig = go.Figure()
+    
+    traces = get_ai_model_distribution_traces(positions_chatgpt, positions_claude, positions_grok)
+    for trace in traces:
+        fig.add_trace(trace)
+    
+    # Add fitt boundaries
+    if fitt_positions:
+        for i, pos in enumerate(fitt_positions):
+            fig.add_vline(
+                x=pos,
+                line_dash="dash",
+                line_color="gray",
+                opacity=0.7,
+                annotation_text=f"Fitt {i+1} end" if i < len(fitt_positions) else None,
+                annotation_position="top"
+            )
+    
+    # Update layout
+    fig.update_layout(
+        title=f"{theme}-Word Occurrences Across Sir Gawain and the Green Knight",
+        xaxis_title="Position in text (0 = start, 1 = end)",
+        yaxis_title="",
+        yaxis=dict(
+            tickmode='array',
+            tickvals=[1, 2, 3],
+            ticktext=['Grok', 'Claude', 'ChatGPT'],
+            range=[0.5, 3.5]
+        ),
+        xaxis=dict(range=[0, 1]),
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.3,
+            xanchor="center",
+            x=0.5
+        ),
+        height=400
+    )
+    
     st.plotly_chart(fig, use_container_width=True)
 
 def display_distribution_analysis():
@@ -226,77 +320,6 @@ def get_positions(words_chatgpt, words_claude, words_grok, tokens, total_tokens)
             positions_grok.append(relative_position)
     
     return positions_chatgpt, positions_claude, positions_grok
-
-def create_distribution_plot(positions_chatgpt, positions_claude, positions_grok, 
-                           fitt_positions, theme):
-    """Create and display the distribution plot"""
-    fig = go.Figure()
-    
-    # Add traces for each AI model
-    ai_models = [
-        ("ChatGPT", positions_chatgpt, "#1EE196", 3),
-        ("Claude", positions_claude, "#1ECBE1", 2),
-        ("Grok", positions_grok, "#1E6AE1", 1)
-    ]
-    
-    for model_name, positions, color, y_pos in ai_models:
-        if positions:
-            # Add vertical lines for each word occurrence
-            for pos in positions:
-                fig.add_trace(go.Scatter(
-                    x=[pos, pos],
-                    y=[y_pos - 0.3, y_pos + 0.3],
-                    mode='lines',
-                    line=dict(color=color, width=0.7),
-                    showlegend=False,
-                    hoverinfo='skip'
-                ))
-            
-            # Add legend entry
-            fig.add_trace(go.Scatter(
-                x=[None],
-                y=[None],
-                mode='markers',
-                marker=dict(size=8, color=color),
-                name=model_name
-            ))
-    
-    # Add fitt boundaries
-    if fitt_positions:
-        for i, pos in enumerate(fitt_positions):
-            fig.add_vline(
-                x=pos,
-                line_dash="dash",
-                line_color="gray",
-                opacity=0.7,
-                annotation_text=f"Fitt {i+1} end" if i < len(fitt_positions) else None,
-                annotation_position="top"
-            )
-    
-    # Update layout
-    fig.update_layout(
-        title=f"{theme}-Word Occurrences Across Sir Gawain and the Green Knight",
-        xaxis_title="Position in text (0 = start, 1 = end)",
-        yaxis_title="",
-        yaxis=dict(
-            tickmode='array',
-            tickvals=[1, 2, 3],
-            ticktext=['Grok', 'Claude', 'ChatGPT'],
-            range=[0.5, 3.5]
-        ),
-        xaxis=dict(range=[0, 1]),
-        showlegend=True,
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=-0.3,
-            xanchor="center",
-            x=0.5
-        ),
-        height=400
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
 
 def display_distribution_stats(positions_chatgpt, positions_claude, positions_grok):
     """Display statistics about the distribution"""
